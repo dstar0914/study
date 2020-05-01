@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Getter
 @NoArgsConstructor
@@ -20,9 +21,18 @@ public class Member {
 
     private String password;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    private Set<Role> roles;
+
     @Builder
-    public Member(String email, String password) {
+    public Member(String email, String password, Set<Role> roles) {
         this.email      = email;
         this.password   = password;
+        this.roles      = roles;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

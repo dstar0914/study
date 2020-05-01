@@ -1,6 +1,7 @@
-package kr.study.jwt.member;
+package kr.study.jwt.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.study.jwt.member.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,22 +10,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class MemberApiControllerTest {
+public class AuthControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -35,53 +34,30 @@ public class MemberApiControllerTest {
     @Autowired
     MemberService memberService;
 
-    @Transactional
     @Test
-    public void 회원_저장() throws Exception {
+    public void 토큰_생성() throws Exception {
         //given
-        String email    = "email@email.com";
+        String email    = "email";
         String password = "password";
+        Set<Role> roles = Collections.singleton(Role.USER);
 
         MemberRequestDto requestDto = MemberRequestDto.builder()
                 .email(email)
                 .password(password)
+                .roles(roles)
                 .build();
 
-        //when, then
-        mockMvc.perform(post("/api/member")
-                .header("X-AUTH-TOKEN", getJwtToken())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("id").exists())
-                .andExpect(jsonPath("email").exists())
-                .andExpect(jsonPath("password").exists());
-    }
-
-    public String getJwtToken() throws Exception {
-        String email    = "test@email.com";
-        String password = "pass";
-
-        Member member = Member.builder()
-                .email(email)
-                .password(password)
-                .roles(Collections.singleton(Role.ADMIN))
-                .build();
-
-        memberService.saveMember(member);
+        Member member = memberService.saveMember(requestDto.toEntity());
 
         Map<String, String> userInfo = new HashMap<>();
         userInfo.put("email", email);
         userInfo.put("password", password);
 
-        ResultActions perform = mockMvc.perform(post("/auth/token")
+        //when, then
+        mockMvc.perform(post("/auth/token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userInfo)))
-                .andDo(print());
-
-        String responseBody =  perform.andReturn().getResponse().getContentAsString();
-
-        return responseBody;
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 }
