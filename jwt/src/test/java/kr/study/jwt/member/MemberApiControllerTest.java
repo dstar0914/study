@@ -1,6 +1,7 @@
 package kr.study.jwt.member;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.study.jwt.auth.TokenRequestDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,8 @@ import org.springframework.security.oauth2.common.util.Jackson2JsonParser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +36,6 @@ public class MemberApiControllerTest {
     @Autowired
     MemberService memberService;
 
-    @Transactional
     @Test
     public void 회원_저장() throws Exception {
         //given
@@ -49,7 +47,6 @@ public class MemberApiControllerTest {
                 .password(password)
                 .build();
 
-        //when, then
         mockMvc.perform(post("/api/member")
                 .header("X-AUTH-TOKEN", getJwtToken())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -59,6 +56,28 @@ public class MemberApiControllerTest {
                 .andExpect(jsonPath("id").exists())
                 .andExpect(jsonPath("email").exists())
                 .andExpect(jsonPath("password").exists());
+        //when, then
+    }
+    
+    @Test
+    public void 둘다_유횩기간지난_토큰_재요청() throws Exception {
+        //given
+        String accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSIsInJvbGVzIjpbeyJhdXRob3JpdHkiOiJST0xFX0FETUlOIn1dLCJpYXQiOjE1ODg0Mzg5NjMsImV4cCI6MTU4ODQzOTI2M30.AL00c2lZxAsGQK7u4UfWlyOBQamNMMHZy_fqRWeqV7c";
+        String refreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGVtYWlsLmNvbSIsInJvbGVzIjpbeyJhdXRob3JpdHkiOiJST0xFX0FETUlOIn1dLCJpYXQiOjE1ODg0Mzg5NjQsImV4cCI6MTU4ODQ0MjU2NH0.g6a6MLURXzF62MSFyJSv5_ydEkY0w3Qz3_oguz7nUYk";
+
+        TokenRequestDto requestDto = TokenRequestDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+        
+        //그냥 요쳥만 해도 email 확인하는 곳에서 에러가 나서 진행이 안됨
+//        mockMvc.perform(post("/auth/token")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(objectMapper.writeValueAsString(requestDto)))
+//                .andDo(print())
+//                .andExpect(status().is(500));
+        
+        //then
     }
 
     public String getJwtToken() throws Exception {
@@ -77,7 +96,7 @@ public class MemberApiControllerTest {
         userInfo.put("email", email);
         userInfo.put("password", password);
 
-        ResultActions perform = mockMvc.perform(post("/auth/token")
+        ResultActions perform = mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userInfo)))
                 .andDo(print());

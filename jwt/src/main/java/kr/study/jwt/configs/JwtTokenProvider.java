@@ -25,16 +25,14 @@ public class JwtTokenProvider {
 
     @Value("spring.jwt.secret")
     private String secretKey;
-
-    private Long tokenValidMillisecond = 100L*60*60;
-
+    private Long tokenValidMillisecond = 1000L*5*60;
     private Long refreshTokenValidMillisecond   = 1000L*60*60;
 
     private final MemberService memberService;
 
     @PostConstruct
     protected void init() {
-        secretKey   = Base64.getEncoder().encodeToString(secretKey.getBytes());
+        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
     /**

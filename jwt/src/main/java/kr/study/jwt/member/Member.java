@@ -25,6 +25,8 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
+    private String refreshToken;
+
     @Builder
     public Member(String email, String password, Set<Role> roles) {
         this.email      = email;
@@ -34,5 +36,14 @@ public class Member {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    /**
+     * refresh_token 업데이트
+     */
+    public Member updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+
+        return this;
     }
 }
