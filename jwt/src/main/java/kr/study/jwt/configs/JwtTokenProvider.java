@@ -26,7 +26,9 @@ public class JwtTokenProvider {
     @Value("spring.jwt.secret")
     private String secretKey;
 
-    private Long tokenValidMillisecond = 1000L*60*60;
+    private Long tokenValidMillisecond = 100L*60*60;
+
+    private Long refreshTokenValidMillisecond   = 1000L*60*60;
 
     private final MemberService memberService;
 
@@ -53,6 +55,23 @@ public class JwtTokenProvider {
     }
 
     /**
+     * JWT refresh 토큰 생성
+     */
+    public String createRefreshToken(String email, Collection<? extends GrantedAuthority> roles) {
+        Claims claims   = Jwts.claims().setSubject(email);
+        claims.put("roles", roles);
+
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + refreshTokenValidMillisecond))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
+    /**
      * Jwt 토큰으로 인증 정보를 조회
      */
     public Authentication getAuthentication(String token) {
@@ -66,6 +85,13 @@ public class JwtTokenProvider {
      */
     public String getUserEmail(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    /**
+     * Jwt 토큰에서 expire 추출
+     */
+    public Date getExpiration(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getExpiration();
     }
 
     /**

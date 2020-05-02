@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -25,8 +26,15 @@ public class AuthController {
     public ResponseEntity createToken(@RequestBody Map<String, String> responseBody) {
         UserDetails user = detailService.loadUserByUsername(responseBody.get("email"));
 
-        String jwt = jwtTokenProvider.createToken(user.getUsername(), user.getAuthorities());
+        String accessToken = jwtTokenProvider.createToken(user.getUsername(), user.getAuthorities());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getUsername(), user.getAuthorities());
 
-        return ResponseEntity.ok(jwt);
+        // 꼭 Map으로 해야될까? DTO로 바꿨는데 _형식으로 저장하기 애매해서 변경하긴 하였음
+        Map<String, Object> response = new HashMap<>();
+        response.put("access_token", accessToken);
+        response.put("refresh_token", refreshToken);
+        response.put("expire", jwtTokenProvider.getExpiration(accessToken).getTime()/1000);
+
+        return ResponseEntity.ok(response);
     }
 }
