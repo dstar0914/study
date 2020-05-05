@@ -34,7 +34,7 @@ public class AuthController {
                 .orElseThrow(() -> new IllegalArgumentException("회원정보가 없습니다."));
 
         if( !passwordEncoder.matches(requestDto.getPassword(), member.getPassword()) ) {
-            throw new IllegalArgumentException("회원정보가 없습니다.");
+            throw new IllegalArgumentException("비밀번호가 일치하지않습니다.");
         }
 
         return ResponseEntity.ok(InitToken(requestDto.getEmail()));

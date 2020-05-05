@@ -55,7 +55,7 @@ public class AuthControllerTest {
         userInfo.put("password", password);
 
         //when, then
-        mockMvc.perform(post("/auth/token")
+        mockMvc.perform(post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userInfo)))
                 .andDo(print())
