@@ -16,6 +16,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.11.0'
 	compile('org.mariadb.jdbc:mariadb-java-client')
 	compile 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
