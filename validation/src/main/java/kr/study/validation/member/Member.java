@@ -1,10 +1,14 @@
 package kr.study.validation.member;
 
+import lombok.Builder;
+import lombok.Getter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+@Getter
 @Entity
 public class Member {
 
@@ -27,8 +31,8 @@ public class Member {
     @Column(nullable = false)
     private String email;
 
-    public Member(Long id, String name, String phone1, String phone2, String phone3, String email) {
-        this.id     = id;
+    @Builder
+    public Member(String name, String phone1, String phone2, String phone3, String email) {
         this.name   = name;
         this.phone1 = phone1;
         this.phone2 = phone2;
