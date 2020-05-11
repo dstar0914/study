@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import kr.study.jwt.member.MemberService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,11 +20,12 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 
+@Getter
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
 
-    @Value("spring.jwt.secret")
+    @Value("${spring.jwt.secret}")
     private String secretKey;
     private Long tokenValidMillisecond = 1000L*5*60;
     private Long refreshTokenValidMillisecond   = 1000L*60*60;
