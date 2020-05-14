@@ -16,6 +16,7 @@ repositories {
 
 dependencies {
 	asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+	testCompile('org.springframework.restdocs:spring-restdocs-mockmvc')
 
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.springframework.boot:spring-boot-starter-web')
