@@ -24,7 +24,7 @@ public class MemberApiController {
     @GetMapping("/{id}")
     public ResponseEntity getMember(@PathVariable Long id) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(CMemberNotFoundException::new);
+                .orElseThrow(CMemberNotFoundException::new); // () -> new CMemberNotFoundException(msg)
 
         return ResponseEntity.ok(responseService.getSingleResult(member));
     }

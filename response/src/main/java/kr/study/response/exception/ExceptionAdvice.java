@@ -25,6 +25,7 @@ public class ExceptionAdvice {
     @ExceptionHandler(CMemberNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected CommonResponse memberNotFoundException(HttpServletRequest request, Exception e) {
+//        return responseService.getFailResult(-11, e.getMessage(), request.getRequestURL().toString());
         return responseService.getFailResult(-11, "Not Found Member data!", request.getRequestURL().toString());
     }
 }
